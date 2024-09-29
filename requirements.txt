@@ -10,7 +10,7 @@ langchain_teddynote
 langchain-anthropic==0.1.23 ; python_version >= "3.11" and python_version < "3.12"
 langchain-chroma==0.1.3 ; python_version >= "3.11" and python_version < "3.12"
 langchain-cohere==0.1.9 ; python_version >= "3.11" and python_version < "3.12"
-langchain-community==0.2.15 ; python_version >= "3.11" and python_version < "3.12"
+langchain-community
 langchain-core==0.2.37 ; python_version >= "3.11" and python_version < "3.12"
 langchain-elasticsearch==0.2.2 ; python_version >= "3.11" and python_version < "3.12"
 langchain-experimental==0.0.61 ; python_version >= "3.11" and python_version < "3.12"
