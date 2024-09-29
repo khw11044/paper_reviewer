@@ -93,3 +93,5 @@ def html_to_markdown_table(html_content):
     markdown_table += f"| {title} | {summary} | {', '.join(entities)} |\n"
     
     return markdown_table
+
+
