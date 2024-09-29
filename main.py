@@ -37,27 +37,13 @@ def st_markdown(markdown_string):
         else:
             st.image(part)  # Add caption if you want -> , caption=title)
 
-def display_pdf(file):
-    # Opening file from file path
-
-    st.markdown("### PDF Preview")
-    base64_pdf = base64.b64encode(file.read()).decode("utf-8")
-
-    # Embedding PDF in HTML
-    pdf_display = f"""<iframe src="data:application/pdf;base64,{base64_pdf}" width="400" height="100%" type="application/pdf"
-                        style="height:100vh; width:100%"
-                    >
-                    </iframe>"""
-
-    # Displaying File
-    st.markdown(pdf_display, unsafe_allow_html=True)
 
 # 파일 업로드 전용 폴더: 임시로 저장 
 root_dir = ".cache/files"
 os.makedirs(root_dir, exist_ok=True)
 
 st.set_page_config(
-    page_title="논문 리뷰 AI Agent",
+    page_title="현우의 논문 리뷰 AI Agent",
     page_icon=":star:"  # You can use emojis or provide a URL to a custom favicon image
 )
 
@@ -205,7 +191,7 @@ def main(file, selected_model):
 
 # 파일이 업로드 되었을 때
 if uploaded_file:
-    display_pdf(uploaded_file)
+
     md_output_file, state = main(uploaded_file, selected_model)
 
     # 마크다운 파일 읽기
