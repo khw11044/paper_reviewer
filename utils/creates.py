@@ -1,4 +1,4 @@
-from utils.Classes import GraphState, ImageCropper
+from utils.Classes import GraphState
 from langchain_core.documents import Document
 
 from langchain_core.prompts import PromptTemplate

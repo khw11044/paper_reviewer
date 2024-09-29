@@ -1,7 +1,6 @@
 import os 
 
 
-from bs4 import BeautifulSoup
 from utils.Classes import GraphState, ImageCropper
 
 def crop_equation(state: GraphState):
