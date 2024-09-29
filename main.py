@@ -56,8 +56,11 @@ def display_pdf(file):
 root_dir = ".cache/files"
 os.makedirs(root_dir, exist_ok=True)
 
+st.set_page_config(
+    page_title="논문 리뷰 AI Agent",
+    page_icon=":star:"  # You can use emojis or provide a URL to a custom favicon image
+)
 
-st.beta_set_page_title('논문 리뷰 AI Agent')
 # ------------------------------------- 구성: 제목 -------------------------------------------------
 st.title("논문 원본 읽기")
 
