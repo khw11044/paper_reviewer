@@ -3,6 +3,7 @@ streamlit
 langchain_core
 pymupdf
 requests
+langchain
 langchain-anthropic==0.1.23 ; python_version >= "3.11" and python_version < "3.12"
 langchain-chroma==0.1.3 ; python_version >= "3.11" and python_version < "3.12"
 langchain-cohere==0.1.9 ; python_version >= "3.11" and python_version < "3.12"
