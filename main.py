@@ -26,6 +26,7 @@ os.environ["UPSTAGE_API_KEY"] = UPSTAGE_API_KEY
 # analyzer = LayoutAnalyzer(os.environ.get("UPSTAGE_API_KEY"))
 analyzer = LayoutAnalyzer(UPSTAGE_API_KEY)
 
+
 import re
 def st_markdown(markdown_string):
     parts = re.split(r"!\[(.*?)\]\((.*?)\)", markdown_string)
@@ -77,55 +78,69 @@ with st.sidebar:
 
 # 파일이 업로드 되었을 때
 # 파일을 캐시 저장(시간이 오래 걸리는 작업을 처리할 예정)
-@st.cache_resource(show_spinner="업로드한 파일을 처리 중입니다...")     # 스피너 작업중인 것을 표기해줌
+# @st.cache_resource(show_spinner="업로드한 파일을 처리 중입니다...")     # 스피너 작업중인 것을 표기해줌
 def main(file, selected_model):
+    
     # 업로드한 파일을 캐시 디렉토리에 저장합니다.
     file_content = file.read()
     file_path = f"./{root_dir}/{file.name}"
     with open(file_path, "wb") as f:
         f.write(file_content)
     
+    
+    my_bar = st.progress(0, text="업로드한 파일을 처리 중입니다...")
+    
     # 1. 기본 문서 구조 분석
     state = GraphState(filepath=file_path, batch_size=10)
     state_out = split_pdf(state)
     state.update(state_out)
+    my_bar.progress(1, text="문서 구조 분석")
 
     # # 1.1 문서 구조 분석기를 통해 기본 분석 결과 저장 
     state_out = analyze_layout(analyzer, state)
     state.update(state_out)
+    my_bar.progress(2, text='문서 구조 분석')
 
     # 1.2 문서에 대한 메타데이터 추출 
     state_out = extract_page_metadata(state)
     state.update(state_out)
+    my_bar.progress(3, text='문서 구조 분석')
 
     # 1.3 문서 구조와 내용에 대한 html 내용 추출
     # 페이지별 정보를 추출 
     state_out = extract_page_elements(state)
     state.update(state_out)
+    my_bar.progress(4, text='문서 정보 분석')
 
     # 1.4 문서 요소 별 tag 추출
     state_out = extract_tag_elements_per_page(state)
     state.update(state_out)
+    my_bar.progress(5, text='문서 정보 분석')
 
     # 1.5 페이지 번호 추출 
     state_out = page_numbers(state)
     state.update(state_out)
+    my_bar.progress(6, text='문서 정보 분석')
 
 
     # 2.1 이미지를 추출하여 저장하고 위치를 저장 
     state_out = crop_image(state)
     state.update(state_out)
+    my_bar.progress(7, text='문서 구성 요소 분석')
 
     # 2.2 표를 추출하여 저장하고 위치를 저장 
     state_out = crop_table(state)
     state.update(state_out)
+    my_bar.progress(8, text='문서 구성 요소 분석')
 
     state_out = crop_equation(state)
     state.update(state_out)
+    my_bar.progress(9, text='문서 구성 요소 분석')
 
     # 2.3 텍스트를 추출하고 저장하여 위치를 저장 
     state_out = extract_page_text(state)
     state.update(state_out)
+    my_bar.progress(10, text='문서 구성 요소 분석')
 
 
     text_summary_chain = get_chain(selected_model, prompt)
@@ -133,40 +148,49 @@ def main(file, selected_model):
     # 3.1 텍스트 요약 생성
     state_out = create_text_summary(text_summary_chain, state)
     state.update(state_out)
+    my_bar.progress(11, text='문서 요약')
     
     trans_chain = get_translator(selected_model)
     state_out = create_text_trans_summary(trans_chain, state)
     state.update(state_out)
+    my_bar.progress(12, text='문서 요약')
     
 
     # 3.2 Image 요약 생성 
     state_out = create_image_summary_data_batches(state)
     state.update(state_out)
+    my_bar.progress(13, text='문서 요약')
 
     # 3.2.1 Image 요약 생성 
     state_out = create_image_summary(state)
     state.update(state_out)
+    my_bar.progress(14, text='문서 요약')
 
     # 3.3 Table 요약 생성 
     state_out = create_table_summary_data_batches(state)
     state.update(state_out)
+    my_bar.progress(15, text='문서 요약')
 
     # 3.3.1 Table 요약 생성 
     state_out = create_table_summary(state)
     state.update(state_out)
+    my_bar.progress(16, text='문서 요약')
 
     # 3.4 Equation 요약 생성 
     state_out = create_equation_summary_data_batches(state)
     state.update(state_out)
+    my_bar.progress(17, text='문서 요약')
 
     # 3.4.1 Equation 요약 생성 
     state_out = create_equation_summary(state)
     state.update(state_out)
+    my_bar.progress(18, text='문서 요약')
 
 
     # 4 마크다운 표 생성 
     state_out = create_table_markdown(state)
     state.update(state_out)
+    my_bar.progress(19, text='문서 요약')
     # 표를 마크다운 표로 다시 만들어?
 
     cnt = 1
@@ -179,6 +203,7 @@ def main(file, selected_model):
     output_folder = os.path.splitext(pdf_file)[0]  # 출력 폴더 경로 설정
     filename = os.path.basename(pdf_file).split('.')[0]
     md_output_file = save_results(output_folder, filename, state['html_content'])
+    my_bar.progress(20, text='문서 분석 내용 저장')
 
     output_file = '.'.join(file_path.split('.')[:-1]) + "_analy.json"             # pdf구조를 json으로 저장 
     with open(output_file, "w", encoding='utf-8') as file:
@@ -186,13 +211,14 @@ def main(file, selected_model):
 
     for del_file in state['split_filepaths'] + state['analyzed_files']:
         os.remove(del_file)
-        
+    
+    my_bar.empty()
     return md_output_file, state
 
 
 # 파일이 업로드 되었을 때
 if uploaded_file:
-
+    
     md_output_file, state = main(uploaded_file, selected_model)
 
     # 마크다운 파일 읽기

@@ -6,6 +6,7 @@ from langchain.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
+from utils.config import config
 
 def get_embedding(config):
     # 임베딩 모델 설정
@@ -19,6 +20,7 @@ def get_embedding(config):
     # )
     # # if config['embed_model']=='gpt'
     embeddings = OpenAIEmbeddings(model=config['embed_model'])
+    # embeddings = OpenAIEmbeddings()
     return embeddings
 
 def build_db(data):
@@ -140,7 +142,7 @@ def build_db(data):
         pickle.dump(split_documents, f)
         
     # Chroma DB 생성 및 반환 persist_directory=DB_PATH
-    db = FAISS.from_documents(split_documents, embedding=get_embedding())
+    db = FAISS.from_documents(split_documents, embedding=get_embedding(config))
     db.save_local(save_db_file)
     
     print('build db done')
