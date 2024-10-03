@@ -21,12 +21,17 @@ from utils.vectordb import get_embedding
 
 def format_docs(docs):
     """검색된 문서들을 하나의 문자열로 포맷팅"""
-    context = ""
-    for doc in docs:
-        context += doc.page_content
-        context += '\n'
-    return context
 
+    context = ""
+    
+    for doc in docs:
+        metadata = doc.metadata
+        section = metadata['section']
+        section_summary = metadata['section_summary']
+        metadata_context = f"#Section : {section} \n #Section_summary: {section_summary} \n #Content: {doc.page_content}"
+        context += metadata_context
+        context += '\n\n'
+    return context
 
 class Ragpipeline:
     def __init__(self, source, config):
@@ -34,13 +39,17 @@ class Ragpipeline:
         # self.llm = ChatOllama(model=config['llm_predictor']['model_name'], temperature=config['llm_predictor']['temperature'])
         # self.llm = ChatOllama(model="llama3-ko-instruct", temperature=0)
         self.llm = ChatOpenAI(model_name=config['llm_predictor']['model_name'], temperature=0.1)
-        
-        self.base_retriever = self.init_retriever(source, config)
-        self.ensemble_retriever = self.init_ensemble_retriever(source, config)
+        self.source = source
+        self.config = config
+        self.base_retriever = self.init_retriever()
+        self.ensemble_retriever = self.init_ensemble_retriever()
         self.chain = self.init_chain()
         
         
-    def init_retriever(self, source, config):
+    def init_retriever(self):
+        source = self.source
+        config = self.config
+        
         # vector_store = Chroma(persist_directory=source, embedding_function=get_embedding())
         embeddings_model = get_embedding(config)  # config
         vector_store = FAISS.load_local(source, embeddings_model, allow_dangerous_deserialization=True)
@@ -64,7 +73,10 @@ class Ragpipeline:
         
         return retriever
     
-    def init_ensemble_retriever(self, source, config):
+    def init_ensemble_retriever(self):
+        source = self.source
+        config = self.config
+        
         retriever = self.base_retriever
         
         all_docs = pickle.load(open(f'{source}.pkl', 'rb'))
