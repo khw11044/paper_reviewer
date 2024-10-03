@@ -96,7 +96,7 @@ if selected_paper:
                     
                     img_name = os.path.basename(img_file).split('.')[0]
                     
-                    markdown_result = html_to_markdown_table(json_data['image_summary'][img_name])
+                    markdown_result = html_to_markdown_table(json_data['images_summary'][img_name])
                     doc = Document(page_content=markdown_result)
                     markdown_result = trans_chain.invoke([doc])
                     st.markdown(markdown_result, unsafe_allow_html=True)
