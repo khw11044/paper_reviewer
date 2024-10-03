@@ -12,29 +12,31 @@ class GraphState(TypedDict):
     filepath: str  # path
     filetype: str  # pdf
 
-    section_names: list[int]  # page numbers
+    section_names: list[int]                            # page numbers
     html_content: list
-    batch_size: int  # batch size
-    split_filepaths: list[str]  # split files
-    analyzed_files: list[str]  # analyzed files
+    batch_size: int                                     # batch size
+    split_filepaths: list[str]                          # split files
+    analyzed_files: list[str]                           # analyzed files
+    
     section_elements: dict[int, dict[str, list[dict]]]  # page elements
-    page_metadata: dict[int, dict]  # page metadata
-    section_metadata: dict[int, dict]  # page metadata
-
-    section_summary: dict[int, str]  # page summary
+    page_metadata: dict[int, dict]                      # page metadata
+    section_metadata: dict[int, dict]                   # page metadata
+    section_summary: dict[int, str]                     # page summary
+    
     equation: list[str]
-    equation_summary: list[str]  # image summary
-    images: list[str]  # image paths
-    images_summary: list[str]  # image summary
-    tables: list[str]  # table
-    tables_summary: dict[int, str]  # table summary
-    texts: list[str]  # text
-    texts_summary: list[str]  # text summary
+    equation_summary: list[str]                         # image summary
+    images: list[str]                                   # image paths
+    images_summary: list[str]                           # image summary
+    tables: list[str]                                   # table
+    tables_summary: dict[int, str]                      # table summary
+    texts: list[str]                                    # text
+    texts_summary: list[str]                            # text summary
     
     texts_trans: list[str]
-    texts_trans_summary: list[str]  # text summary
+    texts_trans_summary: list[str]                      # text summary
     
-    
+    paper_summary: list[str]                            # paper summary
+    paper_trans_summary: list[str]
     
     
 # 문서 구조 분석기 

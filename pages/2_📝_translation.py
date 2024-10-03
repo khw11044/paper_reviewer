@@ -6,6 +6,7 @@ from langchain.schema import Document
 from utils.funcs import html_to_markdown_table
 from utils.creates import get_translator
 import re
+from utils.prompt import trans_prompt
 
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 UPSTAGE_API_KEY = st.secrets["UPSTAGE_API_KEY"]
@@ -69,8 +70,10 @@ if selected_paper:
         markdown_contents = []  # 마크다운 내용을 저장할 빈 리스트
 
         names = json_data['section_names']
-        # 번역기 
-        trans_chain = get_translator(selected_model)
+        # 번역기 text는 이미 번역이 되어있고 이미지에 대한 설명부분을 번역하기 위헤 
+        trans_chain = get_translator(selected_model, trans_prompt)
+        
+        
         for i, page in enumerate(json_data['section_elements'].keys()):
             page = int(page)
             print(names[page])

@@ -42,14 +42,20 @@ if selected_paper:
     with open(json_file, "r", encoding='utf-8') as f:
         json_data = json.load(f)
 
-    markdown_contents = []  # 마크다운 내용을 저장할 빈 리스트
 
+
+    markdown_contents = []  # 마크다운 내용을 저장할 빈 리스트
+    
+    
     names = json_data['section_names']
-    for page in json_data['section_elements'].keys():
+    for i, page in enumerate(json_data['section_elements'].keys()):
         page = int(page)
         print(names[page])
         text_summary = json_data['text_summary'][str(page)]
         section_title = f'# {names[page]}'
+        if i==0:
+            text_summary = json_data['paper_summary']
+        
         st.markdown(section_title)
         st.markdown(text_summary)
         markdown_contents.append(section_title)

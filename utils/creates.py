@@ -8,23 +8,7 @@ from langchain.chains.combine_documents import (
 )
 from langchain_core.documents import Document
 
-# 요약을 위한 프롬프트 템플릿을 정의합니다.
-prompt = PromptTemplate.from_template(
-    """Please summarize the sentence according to the following REQUEST.
-    
-REQUEST:
-1. Summarize the main points in bullet points.
-2. Write the summary in same language as the context.
-3. DO NOT translate any technical terms.
-4. DO NOT include any unnecessary information.
-5. Summary must include important entities, numerical values.
 
-CONTEXT:
-{context}
-
-SUMMARY:"
-"""
-)
 
 def get_chain(model_name, prompt):
     # ChatOpenAI 모델의 또 다른 인스턴스를 생성합니다. (이전 인스턴스와 동일한 설정)
@@ -35,6 +19,7 @@ def get_chain(model_name, prompt):
 
     # 문서 요약을 위한 체인을 생성합니다.
     # 이 체인은 여러 문서를 입력받아 하나의 요약된 텍스트로 결합합니다.
+    prompt = PromptTemplate.from_template(prompt)
     text_summary_chain = create_stuff_documents_chain(llm, prompt)
     
     return text_summary_chain
@@ -65,6 +50,42 @@ def create_text_summary(text_summary_chain, state: GraphState):
     # 요약된 텍스트를 포함한 새로운 GraphState 객체를 반환합니다.
     return GraphState(text_summary=text_summary)
 
+# def map_reduce_summary(paper_summary_chain, state: GraphState):
+#     # state에서 텍스트 데이터를 가져옵니다.
+#     texts = state["text_summary"]
+
+#     # 요약된 텍스트를 저장할 딕셔너리를 초기화합니다.
+#     paper_summary = dict()
+
+#     # 각 페이지의 텍스트를 Document 객체로 변환하여 입력 리스트를 생성합니다.
+#     inputs = [
+#         {"context": [Document(page_content=text)]} for page_num, text in texts.items()
+#     ]
+
+#     # paper_summary_chain을 사용하여 일괄 처리로 요약을 생성합니다.
+#     summaries = paper_summary_chain.batch(inputs)
+
+#     # 생성된 요약을 페이지 번호와 함께 딕셔너리에 저장합니다.
+#     for page_num, summary in enumerate(summaries):
+#         paper_summary[page_num] = summary
+
+#     # 요약된 텍스트를 포함한 새로운 GraphState 객체를 반환합니다.
+#     return GraphState(paper_summary=paper_summary)
+
+
+def map_reduce_summary(paper_summary_chain, state: GraphState):
+    # state에서 텍스트 데이터를 가져옵니다.
+    texts = state["text_summary"]
+
+    inputs = [text for _, text in texts.items()]
+    inputs = {"context": [Document(page_content="\n".join(inputs))]}
+
+    # paper_summary_chain을 사용하여 일괄 처리로 요약을 생성합니다.
+    summaries = paper_summary_chain.invoke(inputs)
+
+    # 요약된 텍스트를 포함한 새로운 GraphState 객체를 반환합니다.
+    return GraphState(paper_summary=summaries)
+
 
 def create_text_trans_summary(trans_chain, state: GraphState):
 
@@ -87,8 +108,12 @@ def create_text_trans_summary(trans_chain, state: GraphState):
     for page_num, summary in enumerate(summaries):
         text_trans_summary[page_num] = summary
 
+    paper_summary = state["paper_summary"]
+    # inputs = [text for _, text in paper_summary.items()]
+    # summaries_trans = trans_chain.invoke(inputs)
+    summaries_trans = trans_chain.invoke({"context": [Document(page_content=paper_summary)]})
     # 요약된 텍스트를 포함한 새로운 GraphState 객체를 반환합니다.
-    return GraphState(texts_trans_summary=text_trans_summary)
+    return GraphState(texts_trans_summary=text_trans_summary, paper_trans_summary=summaries_trans)
 
 
 def create_table_markdown(table_markdown_extractor, state: GraphState):
@@ -309,8 +334,9 @@ When extracting equations, please follow these specific instructions:
 ###
 
 Output Format:
-
-$$ equation $$
+$$ 
+<equation>
+$$
 
 """
         image_paths.append(image_path)
@@ -454,26 +480,10 @@ def create_table_markdown(state: GraphState):
 
 
 from langchain_core.output_parsers import StrOutputParser
-def get_translator(model_name):
+def get_translator(model_name, prompt):
     # ChatOpenAI 모델의 또 다른 인스턴스를 생성합니다. (이전 인스턴스와 동일한 설정)
     
-    trans_prompt = PromptTemplate.from_template(
-    """You are a translator specializing in academic papers.
-    Your task is to translate an English paper into Korean.
-    Please follow the given instructions carefully.
-
-    REQUEST:
-    1. Translate the content into Korean.
-    2. Do not translate technical terms or key concepts; keep them in English (e.g., Cross Attention, Transformer).
-    3. Maintain the original meaning without adding any unnecessary information.
-    4. Make sure to preserve important entities and numerical values.
-    5. Use Korean translations for natural expressions but leave awkward terms in English if necessary.
-
-    CONTEXT:
-    {context}
-
-    TRANSLATION:"""
-    )
+    trans_prompt = PromptTemplate.from_template(prompt)
     
     llm = ChatOpenAI(
         model_name=model_name,
