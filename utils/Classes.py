@@ -23,20 +23,20 @@ class GraphState(TypedDict):
     section_metadata: dict[int, dict]                   # page metadata
     section_summary: dict[int, str]                     # page summary
     
-    equation: list[str]
-    equation_summary: list[str]                         # image summary
-    images: list[str]                                   # image paths
-    images_summary: list[str]                           # image summary
-    tables: list[str]                                   # table
+    equation: list[int]
+    equation_summary: dict[int, str]                        # image summary
+    images: list[int]                                   # image paths
+    images_summary: dict[int, str]                           # image summary
+    tables: list[int]                                   # table
     tables_summary: dict[int, str]                      # table summary
-    texts: list[str]                                    # text
-    texts_summary: list[str]                            # text summary
+    texts: list[int]                                    # text
+    texts_summary: dict[int, str]                            # text summary
     
     texts_trans: list[str]
-    texts_trans_summary: list[str]                      # text summary
+    texts_trans_summary: dict[int, str]                      # text summary
     
-    paper_summary: list[str]                            # paper summary
-    paper_trans_summary: list[str]
+    paper_summary: str                            # paper summary
+    paper_trans_summary: str
     
     
 # 문서 구조 분석기 
