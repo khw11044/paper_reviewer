@@ -51,7 +51,7 @@ if selected_paper:
     for i, page in enumerate(json_data['section_elements'].keys()):
         page = int(page)
         print(names[page])
-        text_summary = json_data['text_summary'][str(page)]
+        text_summary = json_data['texts_summary'][str(page)]
         section_title = f'# {names[page]}'
         if i==0:
             text_summary = json_data['paper_summary']
@@ -67,7 +67,7 @@ if selected_paper:
                 st.image(img_file)
                 
                 img_name = os.path.basename(img_file).split('.')[0]
-                markdown_result = html_to_markdown_table(json_data['image_summary'][img_name])
+                markdown_result = html_to_markdown_table(json_data['images_summary'][img_name])
                 st.markdown(markdown_result, unsafe_allow_html=True)
                 
                 # 이미지와 테이블 마크다운을 리스트에 추가
@@ -81,7 +81,7 @@ if selected_paper:
                 st.image(table_img_file)
                 
                 table_img_name = os.path.basename(table_img_file).split('.')[0]
-                markdown_result = html_to_markdown_table(json_data['table_summary'][table_img_name])
+                markdown_result = html_to_markdown_table(json_data['tables_summary'][table_img_name])
                 st.markdown(markdown_result, unsafe_allow_html=True)
                 
                 # 테이블과 텍스트도 리스트에 추가

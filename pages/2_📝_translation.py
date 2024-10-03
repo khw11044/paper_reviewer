@@ -91,7 +91,7 @@ if selected_paper:
             
             for image_summary_data_batch in json_data['image_summary_data_batches']:
                 if image_summary_data_batch['page'] == page:
-                    img_file = image_summary_data_batch['image']
+                    img_file = image_summary_data_batch['images']
                     st.image(img_file)
                     
                     img_name = os.path.basename(img_file).split('.')[0]
@@ -108,12 +108,12 @@ if selected_paper:
                     
             for table_summary_data_batch in json_data['table_summary_data_batches']:
                 if table_summary_data_batch['page'] == page:
-                    table_img_file = table_summary_data_batch['table']
-                    table_text = table_summary_data_batch['text']
+                    table_img_file = table_summary_data_batch['tables']
+                    table_text = table_summary_data_batch['texts']
                     st.image(table_img_file)
                     
                     table_img_name = os.path.basename(table_img_file).split('.')[0]
-                    markdown_result = html_to_markdown_table(json_data['table_summary'][table_img_name])
+                    markdown_result = html_to_markdown_table(json_data['tables_summary'][table_img_name])
                     doc = Document(page_content=markdown_result)
                     markdown_result = trans_chain.invoke([doc])
                     st.markdown(markdown_result, unsafe_allow_html=True)
