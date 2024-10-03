@@ -91,7 +91,7 @@ if selected_paper:
             
             for image_summary_data_batch in json_data['image_summary_data_batches']:
                 if image_summary_data_batch['page'] == page:
-                    img_file = image_summary_data_batch['images']
+                    img_file = image_summary_data_batch['image']
                     st.image(img_file)
                     
                     img_name = os.path.basename(img_file).split('.')[0]
