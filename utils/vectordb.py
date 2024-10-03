@@ -46,11 +46,11 @@ def build_db(data):
                 page = element['page']
                 id = element['id']
                 try:
-                    print(list(data['image_summary'].keys()))
-                    image_summary = data['image_summary'][str(id)]
+                    print(list(data['images_summary'].keys()))
+                    image_summary = data['images_summary'][int(id)]
                 except:
-                    print(list(data['image_summary'].keys()))
-                    image_summary = data['image_summary'][int(id)]
+                    print(list(data['images_summary'].keys()))
+                    image_summary = data['images_summary'][int(id)]
                 
                 try:
                     print(list(data['images'].keys()))
@@ -85,11 +85,11 @@ def build_db(data):
                 id = element['id']
                 
                 try:
-                    print(list(data['table_summary'].keys()))
-                    table_summary = data['table_summary'][str(id)]
+                    print(list(data['tables_summary'].keys()))
+                    table_summary = data['tables_summary'][str(id)]
                 except:
-                    print(list(data['table_summary'].keys()))
-                    table_summary = data['table_summary'][int(id)]
+                    print(list(data['tables_summary'].keys()))
+                    table_summary = data['tables_summary'][int(id)]
                 
                 try:
                     print(list(data['tables'].keys()))
@@ -121,7 +121,7 @@ def build_db(data):
             category = element['category']
             page = element['page']
             id = element['id']
-            section_summary = data['text_summary'][key]
+            section_summary = data['texts_summary'][key] # data['paper_summary']
             metadata = {
                     'category': category,
                     'section' : section_name,

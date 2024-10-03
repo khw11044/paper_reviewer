@@ -170,7 +170,7 @@ def create_image_summary_data_batches(state: GraphState):
 
     for page_num in page_numbers:
         # 각 페이지의 요약된 텍스트를 가져옴
-        text = state["text_summary"][page_num]
+        text = state["text_summary"][int(page_num)]
         # 해당 페이지의 모든 이미지 요소에 대해 반복
         for image_element in state["section_elements"][page_num]["image_elements"]:
             # 이미지 ID를 정수로 변환
@@ -398,7 +398,7 @@ def create_image_summary(state: GraphState):
         image_summary_output[data_batch["id"]] = image_summary
 
     # 이미지 요약 결과를 포함한 새로운 GraphState 객체 반환
-    return GraphState(image_summary=image_summary_output)
+    return GraphState(images_summary=image_summary_output)
 
 def create_table_summary(state: GraphState):
     # 테이블 요약 추출
@@ -417,7 +417,7 @@ def create_table_summary(state: GraphState):
         table_summary_output[data_batch["id"]] = table_summary
 
     # 테이블 요약 결과를 포함한 새로운 GraphState 객체 반환
-    return GraphState(table_summary=table_summary_output)
+    return GraphState(tables_summary=table_summary_output)
 
 @chain
 def table_markdown_extractor(data_batches):
@@ -479,9 +479,6 @@ def create_table_markdown(state: GraphState):
     return GraphState(table_markdown=table_markdown_output)
 
 ########################################### 번역 
-
-
-
 from langchain_core.output_parsers import StrOutputParser
 def get_translator(model_name, prompt):
     # ChatOpenAI 모델의 또 다른 인스턴스를 생성합니다. (이전 인스턴스와 동일한 설정)
