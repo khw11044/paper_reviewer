@@ -27,10 +27,14 @@ def format_docs(docs):
     for doc in docs:
         metadata = doc.metadata
         section = metadata['section']
-        section_summary = metadata['section_summary']
-        metadata_context = f"#Section : {section} \n #Section_summary: {section_summary} \n #Content: {doc.page_content}"
+        if metadata['category'] == 'figure':
+            summary = metadata['image_summary']
+        else:
+            summary = metadata['section_summary']
+        metadata_context = f"#Section : {section} \n #Summary: {summary} \n #Content: {doc.page_content}"
         context += metadata_context
         context += '\n\n'
+        
     return context
 
 class Ragpipeline:
