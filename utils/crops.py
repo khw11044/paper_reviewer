@@ -34,7 +34,7 @@ def crop_equation(state: GraphState):
                 output_file = os.path.join(output_folder, f"{element['id']}.png")
                 # 이미지 크롭 및 저장
                 ImageCropper.crop_image(pdf_image, normalized_coordinates, output_file)
-                cropped_equations[element["id"]] = output_file
+                cropped_equations[str(element["id"])] = output_file
                 print(f"page:{page_num}, id:{element['id']}, path: {output_file}")
                 
             
@@ -111,8 +111,9 @@ def crop_table(state: GraphState):
                 output_file = os.path.join(output_folder, f"{element['id']}.png")
                 # 표 이미지 크롭 및 저장
                 ImageCropper.crop_image(pdf_image, normalized_coordinates, output_file)
-                cropped_images[element["id"]] = output_file
+                cropped_images[str(element["id"])] = output_file
                 print(f"page:{page_num}, id:{element['id']}, path: {output_file}")
+    
     return GraphState(tables=cropped_images)  # 크롭된 표 이미지 정보를 포함한 GraphState 반환
 
 

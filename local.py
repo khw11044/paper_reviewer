@@ -18,11 +18,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-UPSTAGE_API_KEY = st.secrets["UPSTAGE_API_KEY"]
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-os.environ["UPSTAGE_API_KEY"] = UPSTAGE_API_KEY
-
 analyzer = LayoutAnalyzer(os.environ.get("UPSTAGE_API_KEY"))
 # analyzer = LayoutAnalyzer(UPSTAGE_API_KEY)
 
@@ -160,7 +155,7 @@ def main1(file):
 
 ############################### 생성 ############################################
 def main2(state, selected_model, file):
-    my_bar = st.progress(10, text="업로드한 파일을 처리 중입니다...")
+    my_bar = st.progress(0, text="업로드한 파일을 처리 중입니다...")
     file_path = f"./{root_dir}/{file.name}"
     
     from utils.prompt import summary_prompt, map_prompt, trans_prompt
