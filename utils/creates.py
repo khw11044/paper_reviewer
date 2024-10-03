@@ -45,10 +45,10 @@ def create_text_summary(text_summary_chain, state: GraphState):
 
     # 생성된 요약을 페이지 번호와 함께 딕셔너리에 저장합니다.
     for page_num, summary in enumerate(summaries):
-        text_summary[page_num] = summary
+        text_summary[str(page_num)] = summary
 
     # 요약된 텍스트를 포함한 새로운 GraphState 객체를 반환합니다.
-    return GraphState(text_summary=text_summary)
+    return GraphState(texts_summary=text_summary)
 
 # def map_reduce_summary(paper_summary_chain, state: GraphState):
 #     # state에서 텍스트 데이터를 가져옵니다.
@@ -75,7 +75,7 @@ def create_text_summary(text_summary_chain, state: GraphState):
 
 def map_reduce_summary(paper_summary_chain, state: GraphState):
     # state에서 텍스트 데이터를 가져옵니다.
-    texts = state["text_summary"]
+    texts = state["texts_summary"]
 
     inputs = [text for _, text in texts.items()]
     inputs = {"context": [Document(page_content="\n".join(inputs))]}
@@ -89,7 +89,7 @@ def map_reduce_summary(paper_summary_chain, state: GraphState):
 
 def create_text_trans_summary(trans_chain, state: GraphState):
 
-    texts = state["text_summary"]
+    texts = state["texts_summary"]
     
     text_trans_summary = dict()
     
@@ -106,7 +106,7 @@ def create_text_trans_summary(trans_chain, state: GraphState):
 
     # 생성된 요약을 페이지 번호와 함께 딕셔너리에 저장합니다.
     for page_num, summary in enumerate(summaries):
-        text_trans_summary[page_num] = summary
+        text_trans_summary[str(page_num)] = summary
 
     paper_summary = state["paper_summary"]
     # inputs = [text for _, text in paper_summary.items()]
@@ -148,7 +148,7 @@ def create_equation_summary_data_batches(state: GraphState):
         # 해당 페이지의 모든 이미지 요소에 대해 반복
         for image_element in state["section_elements"][page_num]["equation_elements"]:
             # 이미지 ID를 정수로 변환
-            image_id = int(image_element["id"])
+            image_id = str(image_element["id"])
 
             # 데이터 배치에 이미지 정보, 관련 텍스트, 페이지 번호, ID를 추가
             data_batches.append(
@@ -170,11 +170,11 @@ def create_image_summary_data_batches(state: GraphState):
 
     for page_num in page_numbers:
         # 각 페이지의 요약된 텍스트를 가져옴
-        text = state["text_summary"][int(page_num)]
+        text = state["texts_summary"][str(page_num)]
         # 해당 페이지의 모든 이미지 요소에 대해 반복
         for image_element in state["section_elements"][page_num]["image_elements"]:
             # 이미지 ID를 정수로 변환
-            image_id = int(image_element["id"])
+            image_id = str(image_element["id"])
 
             # 데이터 배치에 이미지 정보, 관련 텍스트, 페이지 번호, ID를 추가
             data_batches.append(
@@ -197,11 +197,11 @@ def create_table_summary_data_batches(state: GraphState):
 
     for page_num in page_numbers:
         # 각 페이지의 요약된 텍스트를 가져옴
-        text = state["text_summary"][int(page_num)]
+        text = state["texts_summary"][str(page_num)]
         # 해당 페이지의 모든 테이블 요소에 대해 반복
         for image_element in state["section_elements"][page_num]["table_elements"]:
             # 테이블 ID를 정수로 변환
-            image_id = int(image_element["id"])
+            image_id = str(image_element["id"])
 
             # 데이터 배치에 테이블 정보, 관련 텍스트, 페이지 번호, ID를 추가
             data_batches.append(
@@ -424,7 +424,7 @@ def table_markdown_extractor(data_batches):
     # 객체 생성
     llm = ChatOpenAI(
         temperature=0,  # 창의성 (0.0 ~ 2.0)
-        model_name="gpt-4o",  # 모델명
+        model_name="gpt-4o-mini",  # 모델명
     )
 
     system_prompt = "You are an expert in converting image of the TABLE into markdown format. Be sure to include all the information in the table. DO NOT narrate, just answer in markdown format."
@@ -479,6 +479,9 @@ def create_table_markdown(state: GraphState):
     return GraphState(table_markdown=table_markdown_output)
 
 ########################################### 번역 
+
+
+
 from langchain_core.output_parsers import StrOutputParser
 def get_translator(model_name, prompt):
     # ChatOpenAI 모델의 또 다른 인스턴스를 생성합니다. (이전 인스턴스와 동일한 설정)

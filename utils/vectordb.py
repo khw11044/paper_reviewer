@@ -47,21 +47,21 @@ def build_db(data):
                 id = element['id']
                 try:
                     print(list(data['images_summary'].keys()))
-                    image_summary = data['images_summary'][int(id)]
+                    image_summary = data['images_summary'][str(id)]
                 except:
                     print(list(data['images_summary'].keys()))
-                    image_summary = data['images_summary'][int(id)]
+                    image_summary = data['images_summary'][str(id)]
                 
                 try:
                     print(list(data['images'].keys()))
                     image_path = data['images'][str(id)]
                 except:
                     print(list(data['images'].keys()))
-                    image_path = data['images'][int(id)]
+                    image_path = data['images'][str(id)]
                     
                 img_text = ''
                 for img_ele in data['image_summary_data_batches']:
-                    if img_ele['id'] == int(id):
+                    if img_ele['id'] == str(id):
                         img_text = img_ele['text']
                         break
                 
@@ -89,18 +89,18 @@ def build_db(data):
                     table_summary = data['tables_summary'][str(id)]
                 except:
                     print(list(data['tables_summary'].keys()))
-                    table_summary = data['tables_summary'][int(id)]
+                    table_summary = data['tables_summary'][str(id)]
                 
                 try:
                     print(list(data['tables'].keys()))
                     table_path = data['tables'][str(id)]
                 except:
                     print(list(data['tables'].keys()))
-                    table_path = data['tables'][int(id)]
+                    table_path = data['tables'][str(id)]
                 
                 table_text = ''
                 for tab_ele in data['table_summary_data_batches']:
-                    if tab_ele['id'] == int(id):
+                    if tab_ele['id'] == str(id):
                         table_text = tab_ele['text']
                         break
                 
@@ -121,7 +121,7 @@ def build_db(data):
             category = element['category']
             page = element['page']
             id = element['id']
-            section_summary = data['texts_summary'][key] # data['paper_summary']
+            section_summary = data['texts_summary'][str(key)] # data['paper_summary']
             metadata = {
                     'category': category,
                     'section' : section_name,

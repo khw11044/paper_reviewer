@@ -58,8 +58,8 @@ def crop_image(state: GraphState):
         cur_page_num = -1
         for element in state["section_elements"][section_num]["image_elements"]:
             page_num = element['page']
-            if cur_page_num != page_num:
-                cur_page_num = page_num
+            if cur_page_num != int(page_num):
+                cur_page_num = int(page_num)
                 pdf_image = ImageCropper.pdf_to_image(pdf_file, page_num)  # PDF 페이지를 이미지로 변환
         
             if element["category"] == "figure":
@@ -72,8 +72,8 @@ def crop_image(state: GraphState):
                 output_file = os.path.join(output_folder, f"{element['id']}.png")
                 # 이미지 크롭 및 저장
                 ImageCropper.crop_image(pdf_image, normalized_coordinates, output_file)
-                cropped_images[element["id"]] = output_file
-                print(f"page:{page_num}, id:{element['id']}, path: {output_file}")
+                cropped_images[str(element["id"])] = output_file
+                print(f"page:{page_num}, id:{str(element['id'])}, path: {output_file}")
                 
             
     return GraphState(images=cropped_images)  # 크롭된 이미지 정보를 포함한 GraphState 반환
@@ -113,9 +113,7 @@ def crop_table(state: GraphState):
                 ImageCropper.crop_image(pdf_image, normalized_coordinates, output_file)
                 cropped_images[element["id"]] = output_file
                 print(f"page:{page_num}, id:{element['id']}, path: {output_file}")
-    return GraphState(
-        tables=cropped_images
-    )  # 크롭된 표 이미지 정보를 포함한 GraphState 반환
+    return GraphState(tables=cropped_images)  # 크롭된 표 이미지 정보를 포함한 GraphState 반환
 
 
 
