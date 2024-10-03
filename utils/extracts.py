@@ -125,7 +125,15 @@ def extract_page_elements(state: GraphState):
                         
                             element["category"] = 'heading1'
                             element["html"] = str(soup)
+                        
+                        else:
+                            context_tag = soup.find("p")
+                            p_text = context_tag.get_text(separator="\n")
+                            cleaned_text = p_text.replace('-\n', '').replace('\n', ' ')
+                            context_tag.string = cleaned_text
+                            element["html"] = str(soup)
             
+                        
             elif element["category"] == "caption":
                 caption_tag = soup.find("caption")
                     
