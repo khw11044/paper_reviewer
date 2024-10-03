@@ -153,7 +153,7 @@ def create_equation_summary_data_batches(state: GraphState):
             # 데이터 배치에 이미지 정보, 관련 텍스트, 페이지 번호, ID를 추가
             data_batches.append(
                 {
-                    "image": state["equation"][str(image_id)],  # 이미지 파일 경로
+                    "image": state["equation"][image_id],  # 이미지 파일 경로
                     "page": page_num,  # 페이지 번호
                     "id": image_id,  # 이미지 ID
                 }
@@ -170,7 +170,7 @@ def create_image_summary_data_batches(state: GraphState):
 
     for page_num in page_numbers:
         # 각 페이지의 요약된 텍스트를 가져옴
-        text = state["text_summary"][int(page_num)]
+        text = state["text_summary"][page_num]
         # 해당 페이지의 모든 이미지 요소에 대해 반복
         for image_element in state["section_elements"][page_num]["image_elements"]:
             # 이미지 ID를 정수로 변환
@@ -179,7 +179,7 @@ def create_image_summary_data_batches(state: GraphState):
             # 데이터 배치에 이미지 정보, 관련 텍스트, 페이지 번호, ID를 추가
             data_batches.append(
                 {
-                    "image": state["images"][str(image_id)],  # 이미지 파일 경로
+                    "image": state["images"][image_id],  # 이미지 파일 경로
                     "text": text,  # 관련 텍스트 요약
                     "page": page_num,  # 페이지 번호
                     "id": image_id,  # 이미지 ID
@@ -206,7 +206,7 @@ def create_table_summary_data_batches(state: GraphState):
             # 데이터 배치에 테이블 정보, 관련 텍스트, 페이지 번호, ID를 추가
             data_batches.append(
                 {
-                    "table": state["tables"][str(image_id)],  # 테이블 데이터
+                    "table": state["tables"][image_id],  # 테이블 데이터
                     "text": text,  # 관련 텍스트 요약
                     "page": page_num,  # 페이지 번호
                     "id": image_id,  # 테이블 ID
