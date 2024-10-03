@@ -205,27 +205,27 @@ def extract_page_elements(state: GraphState):
         for element in data["elements"]:
         
             soup = BeautifulSoup(element["html"], "html.parser")
-            if element["category"] == "paragraph":
+            if element["category"] in ["paragraph", 'heading1']:
                 subtitle_tag = soup.find(["p", "h1"])
                 
                 # 1.1. 이런식인 경우 중 제목
                 if subtitle_tag.string and re.match(r"^\d+\.\d+\.", subtitle_tag.string.strip()):       # Sub section 인 경우
-                    new_subtitle_tag = soup.new_tag("h2", id=subtitle_tag.get("id"))
-                    if subtitle_tag.string:
-                        new_subtitle_tag.string = subtitle_tag.string
-                        subtitle_tag.replace_with(new_subtitle_tag)
-                        
-                        element["category"] = 'heading2'
-                        element["html"] = str(soup)
-                        
-                elif subtitle_tag.string and re.match(r"^\d+\.\d+\.\d+\.", subtitle_tag.string.strip()):  # Sub sub section 인 경우
-                    new_subtitle_tag = soup.new_tag("h3", id=subtitle_tag.get("id"))
-                    if subtitle_tag.string:
-                        new_subtitle_tag.string = subtitle_tag.string
-                        subtitle_tag.replace_with(new_subtitle_tag)
-
-                        element["category"] = 'heading3'
-                        element["html"] = str(soup)
+                    
+                    if re.match(r"^\d+\.\d+\.\d", subtitle_tag.string.strip()):
+                        new_subtitle_tag = soup.new_tag("h3", id=subtitle_tag.get("id"))
+                        if subtitle_tag.string:
+                            new_subtitle_tag.string = subtitle_tag.string
+                            subtitle_tag.replace_with(new_subtitle_tag)
+                            element["category"] = 'heading3'
+                            element["html"] = str(soup)
+                    else:
+                        new_subtitle_tag = soup.new_tag("h2", id=subtitle_tag.get("id"))
+                        if subtitle_tag.string:
+                            new_subtitle_tag.string = subtitle_tag.string
+                            subtitle_tag.replace_with(new_subtitle_tag)
+                            
+                            element["category"] = 'heading2'
+                            element["html"] = str(soup)
                         
                 else:
                     subtitle_tag = soup.find("p", {"style": "font-size:20px"})

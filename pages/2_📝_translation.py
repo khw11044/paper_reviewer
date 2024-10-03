@@ -78,7 +78,7 @@ if selected_paper:
             page = int(page)
             print(names[page])
             if i == 0:
-                text_summary = json_data['text_summary'][str(page)]
+                text_summary = json_data['paper_trans_summary']
             else:
                 text_summary = json_data['texts_trans_summary'][str(page)]
                 
