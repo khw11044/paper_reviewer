@@ -206,7 +206,7 @@ def extract_page_elements(state: GraphState):
         
             soup = BeautifulSoup(element["html"], "html.parser")
             if element["category"] == "paragraph":
-                subtitle_tag = soup.find("p")
+                subtitle_tag = soup.find(["p", "h1"])
                 
                 # 1.1. 이런식인 경우 중 제목
                 if subtitle_tag.string and re.match(r"^\d+\.\d+\.", subtitle_tag.string.strip()):       # Sub section 인 경우
