@@ -108,7 +108,7 @@ if selected_paper:
                     
             for table_summary_data_batch in json_data['table_summary_data_batches']:
                 if table_summary_data_batch['page'] == page:
-                    table_img_file = table_summary_data_batch['tables']
+                    table_img_file = table_summary_data_batch['table']
                     table_text = table_summary_data_batch['texts']
                     st.image(table_img_file)
                     
