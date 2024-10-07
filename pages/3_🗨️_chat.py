@@ -78,7 +78,9 @@ if selected_paper:
 
     chain = Ragpipeline(db_path, config)
     
-    st.session_state["chain"] = chain
+    rag_chain = chain.init_chain()
+    
+    st.session_state["chain"] = rag_chain
     
     print('langchain 준비 완료')
     
@@ -106,7 +108,7 @@ if user_input:
         # 사용자의 입력
         st.chat_message("user").write(user_input)
         # 스트리밍 호출
-        response = chain.answer_generation(user_input)
+        response = chain.stream(user_input)
         with st.chat_message("assistant"):
             # 빈 공간(컨테이너)을 만들어서, 여기에 토큰을 스트리밍 출력한다.
             container = st.empty()
