@@ -5,10 +5,10 @@ import glob
 
 from utils.funcs import html_to_markdown_table
 
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-UPSTAGE_API_KEY = st.secrets["UPSTAGE_API_KEY"]
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-os.environ["UPSTAGE_API_KEY"] = UPSTAGE_API_KEY
+# OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+# UPSTAGE_API_KEY = st.secrets["UPSTAGE_API_KEY"]
+# os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+# os.environ["UPSTAGE_API_KEY"] = UPSTAGE_API_KEY
 
 # 파일 업로드 전용 폴더: 임시로 저장 
 root_dir = ".cache/files"

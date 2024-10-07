@@ -14,17 +14,8 @@ from langchain.retrievers import EnsembleRetriever, MultiQueryRetriever
 from langchain_community.retrievers import BM25Retriever
 # from langchain_teddynote.retrievers import KiwiBM25Retriever
 
-from langchain.chains import create_history_aware_retriever, create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain.schema import HumanMessage
-
-
-
 import pickle
 
-from utils.prompt import contextualize_q_prompt, qa_prompt
 from utils.prompt import template
 from utils.vectordb import get_embedding
 
@@ -105,21 +96,14 @@ class Ragpipeline:
         return ensemble_retriever
         
     def init_chain(self):
+        prompt = PromptTemplate.from_template(template)
+        # 2. Chroma 할지, FAISS 할지, 앙상블 리트리버를 할지, 리트리버의 하이퍼파라메타 바꿔보면서 하기 
         retriever = self.ensemble_retriever       # get_retriever()
-        
-        # 1. 이어지는 대화가 되도록 대화기록과 체인
-        history_aware_retriever = create_history_aware_retriever(self.llm, retriever, contextualize_q_prompt)      # self.mq_ensemble_retriever
-        
-        # 2. 문서들의 내용을 답변할 수 있도록 리트리버와 체인
-        question_answer_chain = create_stuff_documents_chain(self.llm, qa_prompt)
-        
-        # 3. 1과 2를 합침
-        chat_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-        
         
         rag_chain = (
             {"context": retriever | format_docs, "question": RunnablePassthrough()}
-            | chat_chain
+            | prompt
+            | self.llm
             | StrOutputParser()
         )
         

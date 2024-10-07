@@ -8,10 +8,10 @@ from utils.creates import get_translator
 import re
 from utils.prompt import trans_prompt
 
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-UPSTAGE_API_KEY = st.secrets["UPSTAGE_API_KEY"]
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-os.environ["UPSTAGE_API_KEY"] = UPSTAGE_API_KEY
+# OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+# UPSTAGE_API_KEY = st.secrets["UPSTAGE_API_KEY"]
+# os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+# os.environ["UPSTAGE_API_KEY"] = UPSTAGE_API_KEY
 
 def st_markdown(markdown_string):
     parts = re.split(r"!\[(.*?)\]\((.*?)\)", markdown_string)

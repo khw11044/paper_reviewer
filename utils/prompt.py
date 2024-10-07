@@ -1,6 +1,3 @@
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-
-
 
 template = """You are the author of the referenced paper and possess an in-depth understanding of its content, more than anyone else. 
 You are fluent in both English and Korean. When answering the question, respond in Korean, but keep key terms, keywords, and technical terminology in English. 
@@ -16,42 +13,6 @@ Make sure to include the source of your answer, referencing the specific section
 #Answer:
 """
 
-
-# 1. 사용자 질문 맥락화 프롬프트
-contextualize_q_system_prompt = """
-주요 목표는 사용자의 질문을 이해하기 쉽게 다시 작성하는 것입니다.
-사용자의 질문과 채팅 기록이 주어졌을 때, 채팅 기록의 맥락을 참조할 수 있습니다.
-채팅 기록이 없더라도 이해할 수 있는 독립적인 질문으로 작성하세요.
-질문에 바로 대답하지 말고, 필요하다면 질문을 다시 작성하세요. 그렇지 않다면 질문을 그대로 반환합니다.        
-"""
-contextualize_q_prompt = ChatPromptTemplate.from_messages([
-    ("system", contextualize_q_system_prompt),
-    MessagesPlaceholder("chat_history"),
-    ("human", "{input}"),
-])
-
-
-# 2. 질문 프롬프트
-qa_system_prompt = """
-You are the author of the referenced paper and possess an in-depth understanding of its content, more than anyone else. 
-You are fluent in both English and Korean. When answering the question, respond in Korean, but keep key terms, keywords, and technical terminology in English. 
-Make sure to include the source of your answer, referencing the specific section or page number of the paper.
-
-
-#Context: 
-{context}
-
-#Question:
-{question}
-
-#Answer:
-"""
-
-qa_prompt = ChatPromptTemplate.from_messages([
-    ("system", qa_system_prompt),
-    MessagesPlaceholder("chat_history"),
-    ("human", "{question}"),
-])
 
 # 요약을 위한 프롬프트 템플릿을 정의합니다.
 summary_prompt = """Please summarize the sentence according to the following REQUEST.
