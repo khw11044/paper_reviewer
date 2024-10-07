@@ -106,15 +106,20 @@ if user_input:
         # 사용자의 입력
         st.chat_message("user").write(user_input)
         # 스트리밍 호출
-        response = chain.answer_generation(user_input, st.session_state["messages"])
+        response = chain.answer_generation(user_input)
         with st.chat_message("assistant"):
             # 빈 공간(컨테이너)을 만들어서, 여기에 토큰을 스트리밍 출력한다.
             container = st.empty()
 
+            # ai_answer = ""
+            # for chunk in response["answer"].split(" "):
+            #     ai_answer += chunk + " "
+            #     container.markdown(ai_answer + "▌")
+            #     container.markdown(ai_answer)
+                
             ai_answer = ""
-            for chunk in response["answer"].split(" "):
+            for chunk in response:
                 ai_answer += chunk + " "
-                container.markdown(ai_answer + "▌")
                 container.markdown(ai_answer)
 
         # 대화기록을 저장한다.
