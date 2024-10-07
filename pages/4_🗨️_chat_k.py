@@ -12,9 +12,14 @@ from utils.config import config
 # os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 # os.environ["UPSTAGE_API_KEY"] = UPSTAGE_API_KEY
 
-
+import uuid
 # 프롬프트 비용이 너무 많이 소요되는 것을 방지하기 위해
 MAX_MESSAGES_BEFORE_DELETION = 6
+
+if "id" not in st.session_state:
+    st.session_state.id = uuid.uuid4()
+    st.session_state.file_cache = {}
+
 session_id = st.session_state.id
 
 # 파일 업로드 전용 폴더: 임시로 저장 
