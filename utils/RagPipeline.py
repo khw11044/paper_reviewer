@@ -23,8 +23,6 @@ import pickle
 from utils.prompt import template
 from utils.vectordb import get_embedding
 
-from utils.prompt import contextualize_q_prompt, qa_prompt
-
 def format_docs(docs):
     """검색된 문서들을 하나의 문자열로 포맷팅"""
 
@@ -112,16 +110,6 @@ class Ragpipeline:
             | StrOutputParser()
         )
         
-        
-        # # 1. 이어지는 대화가 되도록 대화기록과 체인
-        # history_aware_retriever = create_history_aware_retriever(self.llm, retriever, contextualize_q_prompt)
-
-        # # 2. 문서들의 내용을 답변할 수 있도록 리트리버와 체인
-        # question_answer_chain = create_stuff_documents_chain(self.llm, qa_prompt)
-
-        # # 3. 1과 2를 합침 결과값은 input, chat_history, context, answer 포함함.
-        # rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-        
         return rag_chain
         
     
@@ -130,7 +118,8 @@ class Ragpipeline:
     #     full_response = self.chain.invoke({"input": input, "chat_history": chat_history})
     #     return full_response
     
-    def answer_generation(self, input: str) -> dict:
+    def answer_generation(self, question: str) -> dict:
         
-        full_response = self.chain.invoke({"input": input})
+        full_response = self.chain.invoke(question)
         return full_response
+    

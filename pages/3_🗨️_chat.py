@@ -111,23 +111,14 @@ if user_input:
             # 빈 공간(컨테이너)을 만들어서, 여기에 토큰을 스트리밍 출력한다.
             container = st.empty()
 
-            # ai_answer = ""
-            # for chunk in response["answer"].split(" "):
-            #     ai_answer += chunk + " "
-            #     container.markdown(ai_answer + "▌")
-            #     container.markdown(ai_answer)
-                
             ai_answer = ""
-            for chunk in response:
-                ai_answer += chunk + " "
+            for token in response:
+                ai_answer += token
                 container.markdown(ai_answer)
 
         # 대화기록을 저장한다.
         add_message("user", user_input)
         add_message("assistant", ai_answer)
-        
-        print('st.session_state["messages"]')
-        print(st.session_state["messages"])
         
     else:
         # 파일을 업로드 하라는 경고 메시지 출력

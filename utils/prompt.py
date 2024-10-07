@@ -40,10 +40,11 @@ You are fluent in both English and Korean. When answering the question, respond 
 Make sure to include the source of your answer, referencing the specific section or page number of the paper.
 
 
-
-
 #Question:
 {question}
+
+#CONTEXT:
+{context}
 
 #Answer:
 """
