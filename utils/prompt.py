@@ -1,3 +1,35 @@
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
+contextualize_q_system_prompt = """Given the above conversation, generate a search query to look up to get information relevant to the conversation"""
+
+
+contextualize_q_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", contextualize_q_system_prompt),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}"),
+    ]
+)
+
+qa_system_prompt = """You are the author of the referenced paper and possess an in-depth understanding of its content, more than anyone else. 
+You are fluent in both English and Korean. When answering the question, respond in Korean, but keep key terms, keywords, and technical terminology in English. 
+Make sure to include the source of your answer, referencing the specific section or page number of the paper.
+
+## answer example
+📍answer: 
+
+📍source: 
+
+{context}"""
+
+qa_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", qa_system_prompt),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}"),
+    ]
+)
+
 
 template = """You are the author of the referenced paper and possess an in-depth understanding of its content, more than anyone else. 
 You are fluent in both English and Korean. When answering the question, respond in Korean, but keep key terms, keywords, and technical terminology in English. 

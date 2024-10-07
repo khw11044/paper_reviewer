@@ -3,14 +3,18 @@ import os
 import glob
 import streamlit as st
 from langchain_core.messages.chat import ChatMessage
-from utils.RagPipeline import Ragpipeline
+from utils.RagPipeline2 import Ragpipeline
 
 from utils.config import config
 
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-UPSTAGE_API_KEY = st.secrets["UPSTAGE_API_KEY"]
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-os.environ["UPSTAGE_API_KEY"] = UPSTAGE_API_KEY
+# OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+# UPSTAGE_API_KEY = st.secrets["UPSTAGE_API_KEY"]
+# os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+# os.environ["UPSTAGE_API_KEY"] = UPSTAGE_API_KEY
+
+
+# 프롬프트 비용이 너무 많이 소요되는 것을 방지하기 위해
+MAX_MESSAGES_BEFORE_DELETION = 6
 
 # 파일 업로드 전용 폴더: 임시로 저장 
 root_dir = ".cache/files"
@@ -56,6 +60,12 @@ def print_messages():
 
 # 새로운 메시지를 추가
 def add_message(role, message):
+    
+    if len(st.session_state["messages"]) >= MAX_MESSAGES_BEFORE_DELETION:
+        # Remove the first two messages
+        del st.session_state["messages"][0]
+        del st.session_state["messages"][0] 
+    
     st.session_state["messages"].append(ChatMessage(role=role, content=message))
 
 
@@ -86,6 +96,7 @@ user_input = st.chat_input("논문에 대해 궁금한 내용을 물어보세요
 # 경고 메시지를 띄우기 위한 빈 영역
 warning_msg = st.empty()
 
+
 # 만약에 사용자 입력이 들어오면...
 if user_input:
     # chain 을 생성
@@ -95,19 +106,24 @@ if user_input:
         # 사용자의 입력
         st.chat_message("user").write(user_input)
         # 스트리밍 호출
-        response = chain.answer_generation(user_input)
+        response = chain.answer_generation(user_input, st.session_state["messages"])
         with st.chat_message("assistant"):
             # 빈 공간(컨테이너)을 만들어서, 여기에 토큰을 스트리밍 출력한다.
             container = st.empty()
 
             ai_answer = ""
-            for token in response:
-                ai_answer += token
+            for chunk in response["answer"].split(" "):
+                ai_answer += chunk + " "
+                container.markdown(ai_answer + "▌")
                 container.markdown(ai_answer)
 
         # 대화기록을 저장한다.
         add_message("user", user_input)
         add_message("assistant", ai_answer)
+        
+        print('st.session_state["messages"]')
+        print(st.session_state["messages"])
+        
     else:
         # 파일을 업로드 하라는 경고 메시지 출력
         warning_msg.error("파일을 업로드 해주세요.")
