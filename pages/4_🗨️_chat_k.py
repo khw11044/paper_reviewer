@@ -112,7 +112,7 @@ if user_input:
             container = st.empty()
 
             ai_answer = ""
-            for chunk in response["answer"].split(" "):
+            for chunk in response:
                 ai_answer += chunk + " "
                 container.markdown(ai_answer + "▌")
                 container.markdown(ai_answer)

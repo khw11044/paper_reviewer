@@ -18,9 +18,6 @@ Make sure to include the source of your answer, referencing the specific section
 #Context: 
 {context}
 
-#Question:
-{input}
-
 #Answer:
 """
 
@@ -28,7 +25,7 @@ qa_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", qa_system_prompt),
         MessagesPlaceholder("chat_history"),
-        ("human", "{input}"),
+        ("human", "#Question:\n {input}"),
     ]
 )
 

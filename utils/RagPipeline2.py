@@ -18,6 +18,10 @@ from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_history_aware_retriever
 
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
+
 import pickle
 
 from utils.prompt import template
@@ -103,37 +107,43 @@ class Ragpipeline:
         
     def init_chain(self):
         prompt = PromptTemplate.from_template(template)
-
-        # rag_chain = (
-        #     {"context": retriever | format_docs, "question": RunnablePassthrough()}
-        #     | prompt
-        #     | self.llm
-        #     | StrOutputParser()
-        # )
         
         retriever = self.ensemble_retriever       # get_retriever()
-        
-        # # 1. 이어지는 대화가 되도록 대화기록과 체인
-        # history_aware_retriever = create_history_aware_retriever(self.llm, retriever, contextualize_q_prompt)
 
-        # # 2. 문서들의 내용을 답변할 수 있도록 리트리버와 체인
-        # question_answer_chain = create_stuff_documents_chain(self.llm, qa_prompt)
-
-        # # 3. 1과 2를 합침 결과값은 input, chat_history, context, answer 포함함.
-        # rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-        
         rag_chain = (
-            {"context": retriever | format_docs, "question": RunnablePassthrough(), "chat_history": RunnablePassthrough()}
+            {"context": retriever | format_docs, "question": RunnablePassthrough()}
             | qa_prompt
             | self.llm
             | StrOutputParser()
         )
         
+        store = {}
         
-        return rag_chain
+        # 세션 ID를 기반으로 세션 기록을 가져오는 함수
+        def get_session_history(session_ids):
+            print(f"[대화 세션ID]: {session_ids}")
+            if session_ids not in store:  # 세션 ID가 store에 없는 경우
+                # 새로운 ChatMessageHistory 객체를 생성하여 store에 저장
+                store[session_ids] = ChatMessageHistory()
+            return store[session_ids]  # 해당 세션 ID에 대한 세션 기록 반환
+        
+        
+        chain_with_history = RunnableWithMessageHistory(
+            rag_chain,
+            get_session_history,  # 세션 기록을 가져오는 함수
+            input_messages_key="question",  # 사용자의 질문이 템플릿 변수에 들어갈 key
+            history_messages_key="chat_history",  # 기록 메시지의 키
+        )
+        
+        return chain_with_history
         
     
-    def answer_generation(self, input: str, chat_history: list) -> dict:
+    def answer_generation(self, input: str, session_id: str) -> dict:
         
-        full_response = self.chain.invoke({"input": input, "chat_history": chat_history})
+        full_response = self.chain.invoke(
+                # 질문 입력
+                {"question": input},
+                # 세션 ID 기준으로 대화를 기록합니다.
+                config={"configurable": {"session_id": session_id}},
+            )
         return full_response
