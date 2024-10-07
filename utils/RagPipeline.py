@@ -14,10 +14,16 @@ from langchain.retrievers import EnsembleRetriever, MultiQueryRetriever
 from langchain_community.retrievers import BM25Retriever
 # from langchain_teddynote.retrievers import KiwiBM25Retriever
 
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import create_history_aware_retriever
+
 import pickle
 
 from utils.prompt import template
 from utils.vectordb import get_embedding
+
+from utils.prompt import contextualize_q_prompt, qa_prompt
 
 def format_docs(docs):
     """검색된 문서들을 하나의 문자열로 포맷팅"""
@@ -100,16 +106,19 @@ class Ragpipeline:
         # 2. Chroma 할지, FAISS 할지, 앙상블 리트리버를 할지, 리트리버의 하이퍼파라메타 바꿔보면서 하기 
         retriever = self.ensemble_retriever       # get_retriever()
         
-        rag_chain = (
-            {"context": retriever | format_docs, "question": RunnablePassthrough()}
-            | prompt
-            | self.llm
-            | StrOutputParser()
-        )
+        # 1. 이어지는 대화가 되도록 대화기록과 체인
+        history_aware_retriever = create_history_aware_retriever(self.llm, retriever, contextualize_q_prompt)
+
+        # 2. 문서들의 내용을 답변할 수 있도록 리트리버와 체인
+        question_answer_chain = create_stuff_documents_chain(self.llm, qa_prompt)
+
+        # 3. 1과 2를 합침 결과값은 input, chat_history, context, answer 포함함.
+        rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
         
         return rag_chain
         
     
-    def answer_generation(self, question: str) -> dict:
-        full_response = self.chain.invoke(question)
+    def answer_generation(self, input: str, chat_history: list) -> dict:
+        
+        full_response = self.chain.invoke({"input": input, "chat_history": chat_history})
         return full_response
