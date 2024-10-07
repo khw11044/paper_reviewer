@@ -15,6 +15,7 @@ from utils.config import config
 
 # 프롬프트 비용이 너무 많이 소요되는 것을 방지하기 위해
 MAX_MESSAGES_BEFORE_DELETION = 6
+session_id = st.session_state.id
 
 # 파일 업로드 전용 폴더: 임시로 저장 
 root_dir = ".cache/files"
@@ -106,7 +107,7 @@ if user_input:
         # 사용자의 입력
         st.chat_message("user").write(user_input)
         # 스트리밍 호출
-        response = chain.answer_generation(user_input, st.session_state["messages"])
+        response = chain.answer_generation(user_input, session_id)
         with st.chat_message("assistant"):
             # 빈 공간(컨테이너)을 만들어서, 여기에 토큰을 스트리밍 출력한다.
             container = st.empty()
