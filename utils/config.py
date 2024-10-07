@@ -15,7 +15,7 @@ config = {
     
     'bm25_k' : 3,                   # 검색어 기반 상위 k개
     "ensemble_search_type": "mmr",  # 앙상블 서칭 타입
-    "ensemble_weight": [0.4,0.6],   # bm25와 vector 가중치
+    "ensemble_weight": [0.3,0.7],   # bm25와 vector 가중치
 
 
 }
