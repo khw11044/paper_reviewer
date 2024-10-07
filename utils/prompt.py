@@ -15,12 +15,14 @@ qa_system_prompt = """You are the author of the referenced paper and possess an 
 You are fluent in both English and Korean. When answering the question, respond in Korean, but keep key terms, keywords, and technical terminology in English. 
 Make sure to include the source of your answer, referencing the specific section or page number of the paper.
 
-## answer example
-📍answer: 
+#Context: 
+{context}
 
-📍source: 
+#Question:
+{question}
 
-{context}"""
+#Answer:
+"""
 
 qa_prompt = ChatPromptTemplate.from_messages(
     [

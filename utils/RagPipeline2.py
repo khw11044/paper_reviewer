@@ -113,14 +113,22 @@ class Ragpipeline:
         
         retriever = self.ensemble_retriever       # get_retriever()
         
-        # 1. 이어지는 대화가 되도록 대화기록과 체인
-        history_aware_retriever = create_history_aware_retriever(self.llm, retriever, contextualize_q_prompt)
+        # # 1. 이어지는 대화가 되도록 대화기록과 체인
+        # history_aware_retriever = create_history_aware_retriever(self.llm, retriever, contextualize_q_prompt)
 
-        # 2. 문서들의 내용을 답변할 수 있도록 리트리버와 체인
-        question_answer_chain = create_stuff_documents_chain(self.llm, qa_prompt)
+        # # 2. 문서들의 내용을 답변할 수 있도록 리트리버와 체인
+        # question_answer_chain = create_stuff_documents_chain(self.llm, qa_prompt)
 
-        # 3. 1과 2를 합침 결과값은 input, chat_history, context, answer 포함함.
-        rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
+        # # 3. 1과 2를 합침 결과값은 input, chat_history, context, answer 포함함.
+        # rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
+        
+        rag_chain = (
+            {"context": retriever | format_docs, "question": RunnablePassthrough(), "chat_history": RunnablePassthrough()}
+            | qa_prompt
+            | self.llm
+            | StrOutputParser()
+        )
+        
         
         return rag_chain
         
