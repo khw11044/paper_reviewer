@@ -19,7 +19,7 @@ Make sure to include the source of your answer, referencing the specific section
 {context}
 
 #Question:
-{question}
+{input}
 
 #Answer:
 """
