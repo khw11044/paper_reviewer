@@ -3,7 +3,7 @@ import os
 import glob
 import streamlit as st
 from langchain_core.messages.chat import ChatMessage
-from utils.RagPipeline2 import Ragpipeline
+from utils.RagPipeline import Ragpipeline
 
 from utils.config import config
 
