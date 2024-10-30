@@ -18,6 +18,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+# OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+# UPSTAGE_API_KEY = st.secrets["UPSTAGE_API_KEY"]
+# os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+# os.environ["UPSTAGE_API_KEY"] = UPSTAGE_API_KEY
+
 analyzer = LayoutAnalyzer(os.environ.get("UPSTAGE_API_KEY"))
 # analyzer = LayoutAnalyzer(UPSTAGE_API_KEY)
 
@@ -155,7 +160,7 @@ def main1(file):
 
 ############################### 생성 ############################################
 def main2(state, selected_model, file):
-    my_bar = st.progress(0, text="업로드한 파일을 처리 중입니다...")
+    my_bar = st.progress(10, text="업로드한 파일을 처리 중입니다...")
     file_path = f"./{root_dir}/{file.name}"
     
     from utils.prompt import summary_prompt, map_prompt, trans_prompt
@@ -227,7 +232,12 @@ def main2(state, selected_model, file):
     md_output_file = save_results(output_folder, filename, state['html_content'])
     my_bar.progress(20, text='문서 분석 내용 저장 (20/20)')
 
-    output_file = '.'.join(file_path.split('.')[:-1]) + "_analy.json"             # pdf구조를 json으로 저장 
+    output_file = '.'.join(file_path.split('.')[:-1]) + "_analy.json"    
+    
+    print('---'*30)
+    print(output_file)
+    print(state.keys())
+    # pdf구조를 json으로 저장 
     with open(output_file, "w", encoding='utf-8') as file:
         json.dump(state, file, ensure_ascii=False)
 

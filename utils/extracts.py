@@ -173,7 +173,6 @@ def extract_page_metadata(state: GraphState):
     # 추출된 페이지 메타데이터로 새로운 GraphState 객체 생성 및 반환
     return GraphState(page_metadata=page_metadata)
 
-
 def extract_page_elements(state: GraphState):
     # 분석된 JSON 파일 목록을 가져옵니다.
     json_files = state["analyzed_files"]
@@ -202,8 +201,8 @@ def extract_page_elements(state: GraphState):
             data = json.load(f)
 
         # JSON 데이터의 각 요소를 처리합니다.
-        for element in data["elements"]:
-        
+        for index, element in enumerate(data["elements"]):
+
             soup = BeautifulSoup(element["html"], "html.parser")
             if element["category"] in ["paragraph", 'heading1']:
                 subtitle_tag = soup.find(["p", "h1"])
@@ -227,20 +226,6 @@ def extract_page_elements(state: GraphState):
                             element["category"] = 'heading2'
                             element["html"] = str(soup)
                         
-                else:
-                    subtitle_tag = soup.find("p", {"style": "font-size:20px"})
-                    if subtitle_tag:
-                        new_subtitle_tag = soup.new_tag("h1", id=subtitle_tag.get("id"))
-                        if subtitle_tag.string:
-                            new_subtitle_tag.string = subtitle_tag.string
-                            subtitle_tag.replace_with(new_subtitle_tag)
-                        
-                            element["category"] = 'heading1'
-                            element["html"] = str(soup)
-                    
-                    else:
-                        element["html"] = process_html_string(element["html"])
-
                         
             elif element["category"] == "caption":
                 caption_tag = soup.find("caption")
@@ -285,26 +270,161 @@ def extract_page_elements(state: GraphState):
             original_page = int(element["page"])
             # 전체 문서 기준의 상대적 페이지 번호를 계산합니다.
             relative_page = start_page + original_page - 1
-
-                
-            if section_id not in section_elements:
-                section_elements[section_id] = []
+            
+            # 요소의 페이지 번호를 상대적 페이지 번호로 업데이트합니다.
+            element["page"] = relative_page
 
             # 요소에 고유 ID를 부여합니다.
             element["id"] = element_id
             element_id += 1
 
-            # 요소의 페이지 번호를 상대적 페이지 번호로 업데이트합니다.
-            element["page"] = relative_page
-            # 요소를 해당 페이지의 리스트에 추가합니다.
-            
-            if element["category"] != "footnote":
-                section_elements[section_id].append(element)
-                html_content.append(element["html"])
+            if section_name != '' and section_id != -1:
+                if section_id not in section_elements:
+                    section_elements[section_id] = []
+                
+                # 요소를 해당 페이지의 리스트에 추가합니다.
+                
+                if element["category"] != "footnote":
+                    section_elements[section_id].append(element)
+                    html_content.append(element["html"])
             
     # 최종적으로 html_content가 md가 된다. 
     # 추출된 페이지별 요소 정보로 새로운 GraphState 객체를 생성하여 반환합니다.
     return GraphState(section_elements=section_elements, section_names=section_names, html_content=html_content)
+
+
+# def extract_page_elements(state: GraphState):
+#     # 분석된 JSON 파일 목록을 가져옵니다.
+#     json_files = state["analyzed_files"]
+    
+#     pdf_file = state["filepath"]  # PDF 파일 경로
+#     output_folder = os.path.splitext(pdf_file)[0]  # 출력 폴더 경로 설정
+#     filename = os.path.basename(pdf_file).split('.')[0]
+    
+#     # 섹션별 요소를 저장할 딕셔너리를 초기화합니다.
+#     section_elements = dict()
+#     section_names = []
+#     html_content = []
+
+#     # 전체 문서에서 고유한 요소 ID를 부여하기 위한 카운터입니다.
+#     element_id = 0
+#     section_id = -1
+#     section_name =''
+
+#     # 각 JSON 파일을 순회하며 처리합니다.
+#     for json_file in json_files:
+#         # 파일명에서 시작 페이지 번호를 추출합니다.
+#         start_page, _ = extract_start_end_page(json_file)
+
+#         # JSON 파일을 열어 데이터를 로드합니다.
+#         with open(json_file, "r", encoding='utf-8') as f:
+#             data = json.load(f)
+
+#         # JSON 데이터의 각 요소를 처리합니다.
+#         for index, element in enumerate(data["elements"]):
+
+#             soup = BeautifulSoup(element["html"], "html.parser")
+#             if element["category"] in ["paragraph", 'heading1']:
+#                 subtitle_tag = soup.find(["p", "h1"])
+                
+#                 # 1.1. 이런식인 경우 중 제목
+#                 if subtitle_tag.string and re.match(r"^\d+\.\d+\.", subtitle_tag.string.strip()):       # Sub section 인 경우
+                    
+#                     if re.match(r"^\d+\.\d+\.\d", subtitle_tag.string.strip()):
+#                         new_subtitle_tag = soup.new_tag("h3", id=subtitle_tag.get("id"))
+#                         if subtitle_tag.string:
+#                             new_subtitle_tag.string = subtitle_tag.string
+#                             subtitle_tag.replace_with(new_subtitle_tag)
+#                             element["category"] = 'heading3'
+#                             element["html"] = str(soup)
+#                     else:
+#                         new_subtitle_tag = soup.new_tag("h2", id=subtitle_tag.get("id"))
+#                         if subtitle_tag.string:
+#                             new_subtitle_tag.string = subtitle_tag.string
+#                             subtitle_tag.replace_with(new_subtitle_tag)
+                            
+#                             element["category"] = 'heading2'
+#                             element["html"] = str(soup)
+                        
+#                 # else:
+#                 #     subtitle_tag = soup.find("p", {"style": "font-size:20px"})
+#                 #     if subtitle_tag:
+#                 #         new_subtitle_tag = soup.new_tag("h1", id=subtitle_tag.get("id"))
+#                 #         if subtitle_tag.string:
+#                 #             new_subtitle_tag.string = subtitle_tag.string
+#                 #             subtitle_tag.replace_with(new_subtitle_tag)
+                        
+#                 #             element["category"] = 'heading1'
+#                 #             element["html"] = str(soup)
+                    
+#                 #     else:
+#                 #         element["html"] = process_html_string(element["html"])
+
+                        
+#             elif element["category"] == "caption":
+#                 caption_tag = soup.find("caption")
+                    
+#                 if caption_tag:
+#                     new_caption_tag = soup.new_tag("blockquote", id=caption_tag.get("id"), style=caption_tag["style"])
+#                     if caption_tag.string:
+#                         new_caption_tag.string = caption_tag.string
+#                         caption_tag.replace_with(new_caption_tag)
+#                         element["html"] = str(soup)
+            
+#             elif element["category"] == "figure":
+#                 img_tag = soup.find("img")
+#                 img_tag["alt"] = img_tag["alt"].replace('-\n', '').replace('\n', ' ')
+#                 img_tag["src"] = os.path.join(output_folder, str(element['id'])+'.png').replace("\\", "/")
+#                 element["html"] = str(soup)
+            
+#             elif element["category"] == "equation":
+#                 equation_tag = soup.find("p", {"data-category": "equation"})
+#                 equation_img_tag = soup.new_tag("img")
+#                 equation_img_tag["alt"] = "equation"
+#                 equation_img_tag["id"] = str(element['id'])
+#                 equation_img_tag["src"] = os.path.join(output_folder, str(element['id'])+'.png').replace("\\", "/")
+#                 equation_tag.insert_after(equation_img_tag)
+#                 equation_tag.decompose()  # 기존 수식 태그를 삭제
+#                 element["html"] = str(soup)
+                
+                
+#             elif element["category"] == "list":
+#                 element["html"] = process_html_string(element["html"])
+#                 element["html"] = process_html(element["html"])
+                    
+                
+#             if element["category"] == 'heading1':
+#                 section_name = soup.find('h1').get_text(separator="\n")
+#                 section_name = section_name.replace('-\n', '').replace('\n', ' ')
+#                 section_names.append(section_name)
+#                 section_id += 1
+#                 element["html"] = process_html_string(element["html"])
+            
+#             # 원본 페이지 번호를 정수로 변환합니다.
+#             original_page = int(element["page"])
+#             # 전체 문서 기준의 상대적 페이지 번호를 계산합니다.
+#             relative_page = start_page + original_page - 1
+
+#             if section_id == -1:
+#                 section_id = 0
+#             if section_id not in section_elements:
+#                 section_elements[section_id] = []
+
+#             # 요소에 고유 ID를 부여합니다.
+#             element["id"] = element_id
+#             element_id += 1
+
+#             # 요소의 페이지 번호를 상대적 페이지 번호로 업데이트합니다.
+#             element["page"] = relative_page
+#             # 요소를 해당 페이지의 리스트에 추가합니다.
+            
+#             if element["category"] != "footnote":
+#                 section_elements[section_id].append(element)
+#                 html_content.append(element["html"])
+            
+#     # 최종적으로 html_content가 md가 된다. 
+#     # 추출된 페이지별 요소 정보로 새로운 GraphState 객체를 생성하여 반환합니다.
+#     return GraphState(section_elements=section_elements, section_names=section_names, html_content=html_content)
 
 
 
