@@ -40,7 +40,7 @@ os.makedirs(root_dir, exist_ok=True)
 
 
 # 파일 업로드
-uploaded_file = root_dir + '/Kim_Do_You_Remember_Dense_Video_Captioning_with_Cross-Modal_Memory_Retrieval_CVPR_2024_paper.pdf'
+uploaded_file = root_dir + '/openVLA.pdf'
 
 # 모델 선택 메뉴
 selected_model = "gpt-4o-mini"

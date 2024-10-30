@@ -31,12 +31,22 @@ import re
 def st_markdown(markdown_string):
     parts = re.split(r"!\[(.*?)\]\((.*?)\)", markdown_string)
     for i, part in enumerate(parts):
-        if i % 3 == 0:
-            st.markdown(part)
-        elif i % 3 == 1:
-            title = part
+        if '.png' in part:
+            try:
+                st.image(part)
+            except:
+                print('error')
+                print(part)
         else:
-            st.image(part)  # Add caption if you want -> , caption=title)
+            st.markdown(part)
+        
+        
+        # if i % 3 == 0:
+        #     st.markdown(part)
+        # elif i % 3 == 1:
+        #     title = part
+        # else:
+        #     st.image(part)  # Add caption if you want -> , caption=title)
 
 
 # 파일 업로드 전용 폴더: 임시로 저장 
