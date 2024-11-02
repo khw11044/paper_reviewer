@@ -28,3 +28,4 @@ langdetect==1.0.9 ; python_version >= "3.11" and python_version < "3.12"
 langgraph==0.0.69 ; python_version >= "3.11" and python_version < "3.12"
 langsmith==0.1.108 ; python_version >= "3.11" and python_version < "3.12"
 faiss-cpu
+anthropic
